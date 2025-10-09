@@ -31,9 +31,28 @@ def check_inputs(input_dir, midata, statement):
     else:
         logger.info("All inputs are correct; ready to go")
 
+def read_nationwide_file(file):
+    logger.info(f"Reading first five lines of file {file}")
+
+    # Nationwide exports files encoded with ISO-8859-1, using CRLF terminators
+    f = open(file, encoding="latin_1")
+    c = csv.reader(f)
+
+    n = 0
+    for line in c:
+        if n >= 5:
+            return
+        print(line)
+        n += 1
+
+    f.close()
+
 def main():
     logger.info("Starting...")
     check_inputs(TRANSACTIONS_DIRECTORY, TEST_MIDATA, TEST_STATEMENT)
+    read_nationwide_file(os.path.join(TRANSACTIONS_DIRECTORY, TEST_STATEMENT))
+    read_nationwide_file(os.path.join(TRANSACTIONS_DIRECTORY, TEST_MIDATA))
+    logger.info("Done")
 
 if __name__ == "__main__":
     main()

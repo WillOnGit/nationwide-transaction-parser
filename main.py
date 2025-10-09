@@ -35,5 +35,5 @@ def main():
     logger.info("Starting...")
     check_inputs(TRANSACTIONS_DIRECTORY, TEST_MIDATA, TEST_STATEMENT)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

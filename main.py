@@ -3,6 +3,7 @@ import os
 import logging
 import sys
 
+
 # setup
 logger = logging.getLogger("natpar")
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)

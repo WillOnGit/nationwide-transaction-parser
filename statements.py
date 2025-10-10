@@ -29,7 +29,7 @@ def _parse_monetary_amount(money_string):
         amount_index = 2
     else:
         raise ValueError("Could not detect £ sign; aborting")
-            
+
     # parse number
     remove_full_stop = str.maketrans({".":""})
     magnitude = int(money_string.translate(remove_full_stop)[amount_index:])

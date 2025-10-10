@@ -3,7 +3,7 @@ import os
 import logging
 import sys
 
-from statements import Midata
+from statements import Midata, Nationwide
 
 
 # setup
@@ -41,19 +41,25 @@ def read_nationwide_file(file):
     # Nationwide exports files encoded with ISO-8859-1, using CRLF terminators
     f = open(file, encoding="latin_1")
 
-    # for now, skip through lines until we hit the Midata CSV header
+    # for now, skip through lines until we hit an identifying CSV header
+    # TODO: handle case where no header reached
     while (a := f.readline()):
         if a.strip() == Midata.header:
+            transaction_parser = Midata.parse_transaction
+            break
+        elif a.strip() == Nationwide.header:
+            transaction_parser = Nationwide.parse_transaction
             break
 
-    # parse rest of file as Midata CSV
+    # parse rest of file as CSV
     c = csv.reader(f)
     n = 0
 
     for row in c:
+        # only applicable to midata
         if len(row) == 0:
             break
-        logger.debug(Midata.parse_transaction(row))
+        logger.debug(transaction_parser(row))
         n += 1
     logger.info(f'Parsed {n} transactions from file "{file_basename}"')
 
@@ -62,14 +68,9 @@ def read_nationwide_file(file):
 def main():
     logger.info("Starting...")
     check_inputs(TRANSACTIONS_DIRECTORY, TEST_MIDATA, TEST_STATEMENT)
-    # read_nationwide_file(os.path.join(TRANSACTIONS_DIRECTORY, TEST_STATEMENT))
+    read_nationwide_file(os.path.join(TRANSACTIONS_DIRECTORY, TEST_STATEMENT))
     read_nationwide_file(os.path.join(TRANSACTIONS_DIRECTORY, TEST_MIDATA))
     logger.info("Done")
 
 if __name__ == "__main__":
     main()
-
-# num = 0
-# while (x := a.readline()):
-#     print(f"{num}: {x}", end="")
-#     num += 1

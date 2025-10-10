@@ -35,7 +35,8 @@ def check_inputs(input_dir, midata, statement):
         logger.info("All inputs are correct; ready to go")
 
 def read_nationwide_file(file):
-    logger.info(f"Reading file {file}")
+    file_basename = os.path.basename(file)
+    logger.info(f'Reading file "{file_basename}"')
 
     # Nationwide exports files encoded with ISO-8859-1, using CRLF terminators
     f = open(file, encoding="latin_1")
@@ -47,11 +48,14 @@ def read_nationwide_file(file):
 
     # parse rest of file as Midata CSV
     c = csv.reader(f)
+    n = 0
 
     for row in c:
         if len(row) == 0:
             break
         logger.debug(Midata.parse_transaction(row))
+        n += 1
+    logger.info(f'Parsed {n} transactions from file "{file_basename}"')
 
     f.close()
 

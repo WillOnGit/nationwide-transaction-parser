@@ -13,3 +13,11 @@ TEST_STATEMENT="statement_filename.csv"
 ```
 
 Finally, run `python main.py`.
+
+## Domain notes
+- Inputs are CSV files, in one of two formats, with rows of transactions.
+- Each transaction can be a credit or debit.
+- Each file starts with a complete day of data and ends with a potentially incomplete one.
+- Transactions have no unique id but the running balance can be used to (mostly) identify them.
+- All transactions are in GBP.
+- Each file is for one account, named in a header at the top.

@@ -18,24 +18,29 @@ def read_nationwide_file(file):
     f = open(file, encoding="latin_1")
 
     # for now, skip through lines until we hit an identifying CSV header
-    # TODO: handle case where no header reached
-    while (a := f.readline()):
-        if a.strip() == Midata.header:
-            transaction_parser = Midata.parse_transaction
-            break
-        elif a.strip() == Nationwide.header:
-            transaction_parser = Nationwide.parse_transaction
-            break
+    statement_formats = [ Midata, Nationwide ]
+    statement_format = None
+    while (statement_format is None):
+        line = f.readline()
+        if line == '': # EOF
+            logger.warning(f"Could not detect a statement format for {file_basename}")
+            return None
+        for fmt in statement_formats:
+            if line.strip() == fmt.header:
+                statement_format = fmt
+                logger.debug(f"Format for {file_basename} detected as {statement_format}")
+                break
 
     # parse rest of file as CSV
     c = csv.reader(f)
     n = 0
 
     for row in c:
+        logger.debug(row)
         # only applicable to midata
         if len(row) == 0:
             break
-        logger.debug(transaction_parser(row))
+        logger.debug(statement_format.parse_transaction(row))
         n += 1
     logger.info(f'Parsed {n} transactions from file "{file_basename}"')
 

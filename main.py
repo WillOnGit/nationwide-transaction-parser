@@ -12,7 +12,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 def read_nationwide_file(file):
     file_basename = os.path.basename(file)
-    logger.info(f'Reading file "{file_basename}"')
+    logger.debug(f'Reading file "{file_basename}"')
 
     # Nationwide exports files encoded with ISO-8859-1, using CRLF terminators
     f = open(file, encoding="latin_1")

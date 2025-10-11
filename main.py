@@ -33,18 +33,20 @@ def read_nationwide_file(file):
 
     # parse rest of file as CSV
     c = csv.reader(f)
-    n = 0
 
+    transactions = []
     for row in c:
         logger.debug(row)
         # only applicable to midata
         if len(row) == 0:
             break
-        logger.debug(statement_format.parse_transaction(row))
-        n += 1
-    logger.info(f'Parsed {n} transactions from file "{file_basename}"')
+        transaction = statement_format.parse_transaction(row)
+        logger.debug(transaction)
+        transactions.append(transaction)
 
+    logger.info(f'Parsed {len(transactions)} transactions from file "{file_basename}"')
     f.close()
+    return transactions
 
 def main():
     logger.info("Starting...")

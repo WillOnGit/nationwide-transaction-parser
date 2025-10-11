@@ -10,30 +10,6 @@ from statements import Midata, Nationwide
 logger = logging.getLogger("natpar")
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
-try:
-    from env import TEST_MIDATA, TEST_STATEMENT, TRANSACTIONS_DIRECTORY
-except ImportError:
-    logger.critical("Could not import from env.py; please see the README")
-    sys.exit(1)
-
-def check_inputs(input_dir, midata, statement):
-    failed = False
-
-    if not os.path.isdir(input_dir):
-        logger.critical(f"{input_dir} is not a directory!")
-        sys.exit(1)
-    if not os.path.isfile(os.path.join(input_dir, midata)):
-        logger.critical(f"{midata} is not a file!")
-        failed = True
-    if not os.path.isfile(os.path.join(input_dir, statement)):
-        logger.critical(f"{statement} is not a file!")
-        failed = True
-
-    if failed:
-        sys.exit(1)
-    else:
-        logger.info("All inputs are correct; ready to go")
-
 def read_nationwide_file(file):
     file_basename = os.path.basename(file)
     logger.info(f'Reading file "{file_basename}"')
@@ -67,9 +43,21 @@ def read_nationwide_file(file):
 
 def main():
     logger.info("Starting...")
-    check_inputs(TRANSACTIONS_DIRECTORY, TEST_MIDATA, TEST_STATEMENT)
-    read_nationwide_file(os.path.join(TRANSACTIONS_DIRECTORY, TEST_STATEMENT))
-    read_nationwide_file(os.path.join(TRANSACTIONS_DIRECTORY, TEST_MIDATA))
+
+    statement_dirs = []
+    for arg in sys.argv[1:]:
+        if os.path.isdir(arg):
+            statement_dirs.append(arg)
+        else:
+            logger.warning(f"Skipping {arg} as it is not a directory")
+    if statement_dirs == []:
+        logger.info("Nothing to do")
+        sys.exit(0)
+
+    for statement_dir in statement_dirs:
+        statements = os.listdir(statement_dir)
+        for statement in statements:
+            read_nationwide_file(os.path.join(statement_dir, statement))
     logger.info("Done")
 
 if __name__ == "__main__":

@@ -2,17 +2,12 @@
 Read CSV/midata exports from Nationwide and then do something with them.
 
 ## Setup
-Make a directory with a midata format file and a statement format.
-Then create env.py like so:
+Place midata and statement formatted Nationwide CSVs into one or more directories.
+Then call main.py like so:
 
 ```
-# constants
-TRANSACTIONS_DIRECTORY="/path/to/a/directory"
-TEST_MIDATA="midata_filename.csv"
-TEST_STATEMENT="statement_filename.csv"
+python main.py dir1 dir2 ...
 ```
-
-Finally, run `python main.py`.
 
 ## Domain notes
 - Inputs are CSV files, in one of two formats, with rows of transactions.

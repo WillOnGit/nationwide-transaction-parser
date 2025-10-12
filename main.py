@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 import sys
 
 from statements import read_nationwide_file

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from datetime import date
+import datetime
 
 
 @dataclass
 class Transaction:
-    date: date
+    date: datetime.date
     amount: int # pennies
     kind: str
     description: str

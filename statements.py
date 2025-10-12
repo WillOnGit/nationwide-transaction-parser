@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 import os
 import csv
 import logging
@@ -50,7 +50,7 @@ def _parse_midata_date(date_string):
     month = int(date_string[3:5])
     year = int(date_string[6:])
 
-    return date(year, month, day)
+    return datetime.date(year, month, day)
 
 def _midata_parse_transaction(row):
     date = _parse_midata_date(row[0])
@@ -89,7 +89,7 @@ def _parse_nationwide_date(date_string):
     month_string = date_string[3:6]
     month = month_mappings[month_string]
 
-    return date(year, month, day)
+    return datetime.date(year, month, day)
 
 def _nationwide_parse_transaction(row):
     date = _parse_nationwide_date(row[0])

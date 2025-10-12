@@ -128,6 +128,7 @@ def read_nationwide_file(file):
         line = f.readline()
         if line == '': # EOF
             logger.warning(f'Could not detect a statement format for "{file_basename}"')
+            f.close()
             return None
         for fmt in statement_formats:
             if line.strip() == fmt.header:

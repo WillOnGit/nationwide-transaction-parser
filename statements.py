@@ -1,4 +1,7 @@
 from datetime import date
+import os
+import csv
+import logging
 
 from transaction import Transaction
 
@@ -107,3 +110,44 @@ def _nationwide_parse_transaction(row):
     return Transaction()
 
 Nationwide = StatementReader(_NATIONWIDE_HEADER, _nationwide_parse_transaction)
+
+# use this
+logger = logging.getLogger("natpar")
+
+def read_nationwide_file(file):
+    file_basename = os.path.basename(file)
+    logger.debug(f'Reading file "{file_basename}"')
+
+    # Nationwide exports files encoded with ISO-8859-1, using CRLF terminators
+    f = open(file, encoding="latin_1")
+
+    # for now, skip through lines until we hit an identifying CSV header
+    statement_formats = [ Midata, Nationwide ]
+    statement_format = None
+    while (statement_format is None):
+        line = f.readline()
+        if line == '': # EOF
+            logger.warning(f'Could not detect a statement format for "{file_basename}"')
+            return None
+        for fmt in statement_formats:
+            if line.strip() == fmt.header:
+                statement_format = fmt
+                logger.debug(f'Format for "{file_basename}" detected as {statement_format}')
+                break
+
+    # parse rest of file as CSV
+    c = csv.reader(f)
+
+    transactions = []
+    for row in c:
+        logger.debug(row)
+        # only applicable to midata
+        if len(row) == 0:
+            break
+        transaction = statement_format.parse_transaction(row)
+        logger.debug(transaction)
+        transactions.append(transaction)
+
+    logger.info(f'Parsed {len(transactions)} transactions from file "{file_basename}"')
+    f.close()
+    return transactions

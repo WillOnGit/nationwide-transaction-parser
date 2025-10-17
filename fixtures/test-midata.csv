@@ -1,0 +1,13 @@
+"Account Number:","****12345"
+
+"Date","Type","Merchant/Description","Debit/Credit","Balance"
+"19/07/2025","Visa purchase","A COFFEE SHOP GB","-£52.00","-£2.00"
+"26/05/2025","Contactless Payment","A PARK GB","-£15.00","£50.00"
+"11/09/2024","Bank credit SOME KINDLY MERCHANT","**************************","+£5.00","£65.00"
+"29/08/2024","Visa Credit","GROCERY SHOP GB","+£3.20","£60.00"
+"01/08/2024","Contactless Payment","A GARAGE GB","-£9.70","£56.80"
+"29/07/2024","Transfer from PATRICK BATEMAN","***********************************","+£1.50","£66.50"
+"25/07/2024","Direct debit BROADBAND","BROADBAND","-£35.00","£65.00"
+"23/07/2024","PAYMENT TO****************************","*****************","-£26.15","£100.00"
+
+"Arranged Overdraft Limit","20/08/2025","£100.00"

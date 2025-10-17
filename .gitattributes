@@ -1,0 +1,2 @@
+* text=auto
+fixtures/*.csv eol=crlf working-tree-encoding=iso-8859-1

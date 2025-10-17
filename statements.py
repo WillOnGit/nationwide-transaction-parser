@@ -7,16 +7,20 @@ from transaction import Transaction
 
 
 class StatementReader():
-    def __init__(self, header, parse_raw_transaction):
+    def __init__(self, header, parse_raw_transaction, order_raw_transactions):
         self.header = header
         self._transaction_fields = header.count(",") + 1
         self._parse_raw_transaction = parse_raw_transaction
+        self._order_transactions = order_raw_transactions
 
     def parse_transaction(self, row):
         if len(row) != self._transaction_fields:
             raise ValueError(f"Expected {self._transaction_fields} fields but received {len(row)} instead")
 
         return self._parse_raw_transaction(row)
+
+    def order(self, results):
+        return self._order_transactions(results)
 
 # field parsers
 def _parse_monetary_amount(money_string):
@@ -60,7 +64,7 @@ def _midata_parse_transaction(row):
     closing_balance = _parse_monetary_amount(row[4])
     return Transaction(date, amount, kind, description, closing_balance)
 
-Midata = StatementReader(_MIDATA_HEADER, _midata_parse_transaction)
+Midata = StatementReader(_MIDATA_HEADER, _midata_parse_transaction, lambda x : x[::-1])
 
 # Nationwide
 _NATIONWIDE_HEADER = '"Date","Transaction type","Description","Paid out","Paid in","Balance"'
@@ -109,7 +113,7 @@ def _nationwide_parse_transaction(row):
 
     return Transaction()
 
-Nationwide = StatementReader(_NATIONWIDE_HEADER, _nationwide_parse_transaction)
+Nationwide = StatementReader(_NATIONWIDE_HEADER, _nationwide_parse_transaction, lambda x : x)
 
 # use this
 logger = logging.getLogger("natpar")
@@ -151,4 +155,4 @@ def read_nationwide_file(file):
 
     logger.info(f'Parsed {len(transactions)} transactions from file "{file_basename}"')
     f.close()
-    return transactions
+    return statement_format.order(transactions)

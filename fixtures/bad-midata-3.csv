@@ -1,0 +1,8 @@
+"Account Number:","****12345"
+
+"Date","Type","Merchant/Description","Debit/Credit","Balance"
+"19/07/2025","Visa purchase","A COFFEE SHOP GB","-£52.00","-£2.00"
+"26/05/2025","THIS ROW IS MISSING £ SIGNS","A PARK GB","-15.00","50.00"
+"11/09/2024","Bank credit SOME KINDLY MERCHANT","**************************","+£5.00","£65.00"
+
+"Arranged Overdraft Limit","20/08/2025","£100.00"

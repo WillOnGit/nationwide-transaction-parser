@@ -1,0 +1,8 @@
+"Account Name:","Foo current ****12345"
+"Account Balance:","£100.00"
+"Available Balance: ","£100.00"
+
+"Date","Transaction type","Description","Paid out","Paid in","Balance"
+"13 Jun 2025","THIS ROW HAS TOO MANY FIELDS","ABC RESTAURANT","£50.00","","£90.00","-£2.00"
+"24 Jun 2025","Payment to","ABC GARAGE","£30.00","","£120.00"
+"25 Jun 2025","Visa Credit","ABC SUPERMARKET","","£10.00","£130.00"

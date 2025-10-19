@@ -149,9 +149,17 @@ def read_nationwide_file(file):
         # only applicable to midata
         if len(row) == 0:
             break
-        transaction = statement_format.parse_transaction(row)
-        logger.debug(transaction)
-        transactions.append(transaction)
+        try:
+            transaction = statement_format.parse_transaction(row)
+            logger.debug(transaction)
+            transactions.append(transaction)
+        except ValueError:
+            f.close()
+            raise
+        except:
+            f.close()
+            logger.warning("An unexpected error occurred!")
+            raise
 
     logger.info(f'Parsed {len(transactions)} transactions from file "{file_basename}"')
     f.close()

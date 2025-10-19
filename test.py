@@ -18,8 +18,12 @@ class TestFileParsing(unittest.TestCase):
         infile = os.path.join(TEST_DATA_DIR, "test-midata.csv")
         result = read_nationwide_file(infile)
 
-        self.assertIsInstance(result, list)
-        self.assertEqual(len(result), 8)
+        self.assertIsInstance(result, tuple)
+        self.assertEqual(len(result), 2)
+        self.assertIsInstance(result[0], str)
+        self.assertIsInstance(result[1], list)
+
+        self.assertEqual(len(result[1]), 8)
 
     def test_parse_bad_midatas(self):
         infiles = [f for f in os.listdir(TEST_DATA_DIR) if f.startswith('bad-midata') and f.endswith('.csv')]
@@ -32,8 +36,12 @@ class TestFileParsing(unittest.TestCase):
         infile = os.path.join(TEST_DATA_DIR, "test-statement.csv")
         result = read_nationwide_file(infile)
 
-        self.assertIsInstance(result, list)
-        self.assertEqual(len(result), 6)
+        self.assertIsInstance(result, tuple)
+        self.assertEqual(len(result), 2)
+        self.assertIsInstance(result[0], str)
+        self.assertIsInstance(result[1], list)
+
+        self.assertEqual(len(result[1]), 6)
 
     def test_parse_bad_statements(self):
         infiles = [f for f in os.listdir(TEST_DATA_DIR) if f.startswith('bad-statement') and f.endswith('.csv')]
@@ -45,7 +53,7 @@ class TestFileParsing(unittest.TestCase):
 class TestFileTransactions(unittest.TestCase):
     def test_statement_consistency(self):
         infile = os.path.join(TEST_DATA_DIR, "test-statement.csv")
-        result = read_nationwide_file(infile)
+        result = read_nationwide_file(infile)[1]
 
         last_transaction = None
         for transaction in result:
@@ -59,7 +67,7 @@ class TestFileTransactions(unittest.TestCase):
 
     def test_midata_consistency(self):
         infile = os.path.join(TEST_DATA_DIR, "test-midata.csv")
-        result = read_nationwide_file(infile)
+        result = read_nationwide_file(infile)[1]
 
         last_transaction = None
         for transaction in result:

@@ -20,7 +20,7 @@ class TestFileParsing(unittest.TestCase):
 
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 2)
-        self.assertIsInstance(result[0], str)
+        self.assertEqual(result[0], "****12345")
         self.assertIsInstance(result[1], list)
 
         self.assertEqual(len(result[1]), 8)
@@ -38,7 +38,7 @@ class TestFileParsing(unittest.TestCase):
 
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 2)
-        self.assertIsInstance(result[0], str)
+        self.assertEqual(result[0], "****12345")
         self.assertIsInstance(result[1], list)
 
         self.assertEqual(len(result[1]), 6)

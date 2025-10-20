@@ -123,7 +123,7 @@ def _nationwide_parse_transaction(row):
 
     return Transaction()
 
-Nationwide = StatementReader(_NATIONWIDE_HEADER, r'"Account Name:","([^"]+)"', _nationwide_parse_transaction, lambda x : x)
+Nationwide = StatementReader(_NATIONWIDE_HEADER, r'"Account Name:","[^"*]*(\*+\d+)"', _nationwide_parse_transaction, lambda x : x)
 
 # use this
 logger = logging.getLogger("natpar")

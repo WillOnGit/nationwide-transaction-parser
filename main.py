@@ -22,10 +22,15 @@ def main():
         logger.info("Nothing to do")
         sys.exit(0)
 
+    # collect observed accounts
+    accounts = []
     for statement_dir in statement_dirs:
         statements = os.listdir(statement_dir)
         for statement in statements:
-            read_nationwide_file(os.path.join(statement_dir, statement))
+            account, transactions = read_nationwide_file(os.path.join(statement_dir, statement))
+            logger.info(f"Read {len(transactions)} transactions from account {account}")
+            accounts.append(account)
+    logger.info(f"Unique observed accounts: {set(accounts)} ({len(set(accounts))})")
     logger.info("Done")
 
 if __name__ == "__main__":

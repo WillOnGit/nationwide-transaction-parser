@@ -190,6 +190,5 @@ def read_nationwide_file(file):
             logger.warning("An unexpected error occurred!")
             raise
 
-    logger.info(f'Parsed {len(transactions)} transactions from file "{file_basename}"')
     f.close()
     return (account_name, statement_format.order(transactions))

@@ -4,7 +4,7 @@ import logging
 import os
 import re
 
-from transaction import Transaction
+from nationwide_parser.transaction import Transaction
 
 
 class StatementReader():

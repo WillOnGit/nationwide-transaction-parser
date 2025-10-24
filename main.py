@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 
-from statements import read_nationwide_file
+from nationwide_parser.statement import read_nationwide_file
 
 
 # setup

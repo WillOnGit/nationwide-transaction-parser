@@ -16,3 +16,7 @@ python main.py dir1 dir2 ...
 - Transactions have no unique id but the running balance can be used to (mostly) identify them.
 - All transactions are in GBP.
 - Each file is for one account, named in a header at the top.
+- For our purposes, two transactions are the same if these are the same:
+    - date
+    - amount
+    - balance

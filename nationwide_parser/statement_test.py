@@ -2,7 +2,6 @@ import os
 import unittest
 
 from nationwide_parser.statement import read_nationwide_file
-from nationwide_parser.transaction import Transaction
 
 
 TEST_DATA_DIR = "fixtures"

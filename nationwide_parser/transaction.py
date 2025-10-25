@@ -16,7 +16,7 @@ class Transaction:
         else:
             str_preposition = "from"
 
-        absolute_amount = self.amount if self.amount > 0 else -1 * self.amount
+        absolute_amount = abs(self.amount)
 
         if absolute_amount < 100:
             display_amount = f"{absolute_amount}p"

@@ -11,6 +11,9 @@ class Account:
         self.name = name
         self.transactions = transactions
 
+    def __str__(self):
+        return self.name
+
     def add_unique_transactions(self, new_transactions):
         if new_transactions == []:
             logger.debug("new_transactions empty; nothing to do")

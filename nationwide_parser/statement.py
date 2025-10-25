@@ -10,12 +10,16 @@ from nationwide_parser.transaction import Transaction
 logger = logging.getLogger(__name__)
 
 class StatementReader():
-    def __init__(self, header, account_regex, parse_raw_transaction, order_raw_transactions):
+    def __init__(self, name, header, account_regex, parse_raw_transaction, order_raw_transactions):
+        self.name = name
         self.header = header
         self._transaction_fields = header.count(",") + 1
         self._account_regex = re.compile(account_regex)
         self._parse_raw_transaction = parse_raw_transaction
         self._order_transactions = order_raw_transactions
+
+    def __str__(self):
+        return self.name
 
     def get_account_description(self, row):
         match = self._account_regex.search(row)
@@ -75,7 +79,7 @@ def _midata_parse_transaction(row):
     closing_balance = _parse_monetary_amount(row[4])
     return Transaction(date, amount, kind, description, closing_balance)
 
-Midata = StatementReader(_MIDATA_HEADER, r'"Account Number:","([^"]+)"', _midata_parse_transaction, lambda x : x[::-1])
+Midata = StatementReader("Midata", _MIDATA_HEADER, r'"Account Number:","([^"]+)"', _midata_parse_transaction, lambda x : x[::-1])
 
 
 # Nationwide
@@ -125,7 +129,7 @@ def _nationwide_parse_transaction(row):
 
     return Transaction()
 
-Nationwide = StatementReader(_NATIONWIDE_HEADER, r'"Account Name:","[^"*]*(\*+\d+)"', _nationwide_parse_transaction, lambda x : x)
+Nationwide = StatementReader("Nationwide statement", _NATIONWIDE_HEADER, r'"Account Name:","[^"*]*(\*+\d+)"', _nationwide_parse_transaction, lambda x : x)
 
 def read_nationwide_file(file):
     file_basename = os.path.basename(file)

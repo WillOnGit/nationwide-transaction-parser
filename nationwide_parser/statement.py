@@ -7,6 +7,8 @@ import re
 from nationwide_parser.transaction import Transaction
 
 
+logger = logging.getLogger(__name__)
+
 class StatementReader():
     def __init__(self, header, account_regex, parse_raw_transaction, order_raw_transactions):
         self.header = header
@@ -125,9 +127,6 @@ def _nationwide_parse_transaction(row):
 
 Nationwide = StatementReader(_NATIONWIDE_HEADER, r'"Account Name:","[^"*]*(\*+\d+)"', _nationwide_parse_transaction, lambda x : x)
 
-# use this
-logger = logging.getLogger("natpar")
-
 def read_nationwide_file(file):
     file_basename = os.path.basename(file)
     logger.debug(f'Reading file "{file_basename}"')
@@ -174,13 +173,12 @@ def read_nationwide_file(file):
 
     transactions = []
     for row in c:
-        logger.debug(row)
         # only applicable to midata
         if len(row) == 0:
             break
         try:
             transaction = statement_format.parse_transaction(row)
-            logger.debug(transaction)
+            logger.debug(f"Parsed transaction: {transaction}")
             transactions.append(transaction)
         except ValueError:
             f.close()
@@ -190,5 +188,6 @@ def read_nationwide_file(file):
             logger.warning("An unexpected error occurred!")
             raise
 
+    logger.debug(f'Reached end of file "{file_basename}"')
     f.close()
     return (account_name, statement_format.order(transactions))

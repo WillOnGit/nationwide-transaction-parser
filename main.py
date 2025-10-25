@@ -7,8 +7,8 @@ from nationwide_parser.account import Account
 
 
 # setup
-logger = logging.getLogger("natpar")
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logger = logging.getLogger("main")
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 def main():
     logger.info("Starting...")
@@ -30,15 +30,15 @@ def main():
         statements = os.listdir(statement_dir)
         for statement in statements:
             account_name, transactions = read_nationwide_file(os.path.join(statement_dir, statement))
-            logger.info(f"Read {len(transactions)} transactions from account {account_name}")
+            logger.info(f"Read {len(transactions)} transactions for account {account_name}")
             if account_name in accounts:
                 accounts[account_name].add_unique_transactions(transactions)
             else:
                 accounts[account_name] = Account(account_name, transactions)
 
-    logger.info(f"Unique observed accounts: {list(accounts)} ({len(list(accounts))})")
+    logger.info("Parsed all files successfully, with the following results:")
     for x in accounts:
-        logger.info(f"Final window for {x}: {accounts[x].transactions[0].date} -> {accounts[x].transactions[-1].date}")
+        logger.info(f"Account {x}: {len(accounts[x].transactions)} transactions from {accounts[x].transactions[0].date} to {accounts[x].transactions[-1].date}")
     logger.info("Done")
 
 if __name__ == "__main__":

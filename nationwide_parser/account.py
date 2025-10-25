@@ -16,10 +16,10 @@ class Account:
             logger.debug("new_transactions empty; nothing to do")
             return
 
-        logger.info(f"New transactions window: {new_transactions[0].date} -> {new_transactions[-1].date} ")
+        logger.debug(f"New transactions window: {new_transactions[0].date} -> {new_transactions[-1].date} ")
 
         if self.transactions == []:
-            logger.info(f"Initialising {self.name} with {len(new_transactions)} new transactions")
+            logger.debug(f"{self.name} had no transactions; adding all {len(new_transactions)} new transactions")
             self.transactions = new_transactions
             return
 
@@ -50,11 +50,13 @@ class Account:
                 # transactions match, nothing to do
                 old_i += 1
                 new_i += 1
+                logger.debug("Skipping duplicate transaction")
                 continue
             elif new_transactions[new_i].date < self.transactions[old_i].date:
                 # this new transaction fills in a gap
                 unique_transaction_indexes.insert(0, (new_i, old_i))
                 new_i += 1
+                logger.debug("Marked an overlapping new transaction for insertion")
             else:
                 # transactions on the same date should agree
                 raise ValueError(f"Inconsistent transaction data! New transaction {new_transactions[new_i]} conflicts with {self.transactions[old_i]}")
@@ -62,10 +64,11 @@ class Account:
         # if there are any leftover new transactions, they come after any existing ones
         for x in range(new_i, new_transactions_length):
             unique_transaction_indexes.insert(0, (x, old_transactions_length))
+            logger.debug("Marked a later new transaction for insertion")
 
         # append new transactions and exit
         # apply in reverse order so higher indexes aren't corrupted by inserting before
         for x in unique_transaction_indexes:
             self.transactions.insert(x[0], new_transactions[x[1]])
-        logger.info(f"Merged {len(unique_transaction_indexes)} into account {self.name}")
+        logger.debug(f"Merged {len(unique_transaction_indexes)}/{new_transactions_length} transactions into account {self.name}")
         return

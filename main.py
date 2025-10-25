@@ -1,3 +1,4 @@
+import argparse
 import logging
 import os
 import sys
@@ -6,15 +7,27 @@ from nationwide_parser.statement import read_nationwide_file
 from nationwide_parser.account import Account
 
 
+# parse args
+arg_parser = argparse.ArgumentParser(
+        description="Extract transactions from exported Nationwide statements.",
+        )
+arg_parser.add_argument("-v", "--verbose", action="store_true")
+arg_parser.add_argument("directories", nargs="*")
+
+argv = arg_parser.parse_args()
+
 # setup
 logger = logging.getLogger("main")
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+if argv.verbose:
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+else:
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 def main():
     logger.info("Starting...")
 
     statement_dirs = []
-    for arg in sys.argv[1:]:
+    for arg in argv.directories:
         if os.path.isdir(arg):
             statement_dirs.append(arg)
         else:

@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from statements import read_nationwide_file
-from transaction import Transaction
+from nationwide_parser.statement import read_nationwide_file
+from nationwide_parser.transaction import Transaction
 
 
 TEST_DATA_DIR = "fixtures"
@@ -78,6 +78,3 @@ class TestFileTransactions(unittest.TestCase):
             self.assertEqual(last_transaction.closing_balance + transaction.amount, transaction.closing_balance)
             self.assertGreaterEqual(transaction.date, last_transaction.date)
             last_transaction = transaction
-
-if __name__ == "__main__":
-    unittest.main()

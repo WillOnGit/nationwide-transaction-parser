@@ -20,3 +20,6 @@ python main.py dir1 dir2 ...
     - date
     - amount
     - balance
+
+## Tests
+Run `make test` from the root directory to discover and run unit tests.

@@ -14,17 +14,19 @@ class Account:
     def __str__(self):
         return self.name
 
+    """Add only new transactions to account, returning how many were
+    added"""
     def add_unique_transactions(self, new_transactions):
         if new_transactions == []:
             logger.debug("new_transactions empty; nothing to do")
-            return
+            return 0
 
         logger.debug(f"New transactions window: {new_transactions[0].date} -> {new_transactions[-1].date} ")
 
         if self.transactions == []:
             logger.debug(f"{self.name} had no transactions; adding all {len(new_transactions)} new transactions")
             self.transactions = new_transactions
-            return
+            return len(new_transactions)
 
         # prep
         old_transactions_length = len(self.transactions)
@@ -74,4 +76,4 @@ class Account:
         for x in unique_transaction_indexes:
             self.transactions.insert(x[0], new_transactions[x[1]])
         logger.debug(f"Merged {len(unique_transaction_indexes)}/{new_transactions_length} transactions into account {self.name}")
-        return
+        return len(unique_transaction_indexes)

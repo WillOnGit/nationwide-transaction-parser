@@ -17,6 +17,10 @@ class Account:
     """Add only new transactions to account, returning how many were
     added"""
     def add_unique_transactions(self, new_transactions):
+        if new_transactions is self.transactions:
+            logger.warning("Attempt to insert own transactions into self detected; aborting")
+            return 0
+
         if new_transactions == []:
             logger.debug("new_transactions empty; nothing to do")
             return 0

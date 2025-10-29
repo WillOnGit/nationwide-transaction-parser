@@ -38,7 +38,7 @@ class Account:
         new_transactions_length = len(new_transactions)
         new_transactions_start = new_transactions[0].date
 
-        unique_transaction_indexes = []
+        unique_transaction_indexes = [] # list of tuples (index of self.transactions where to insert, index of transaction in new_transactions)
         old_i = new_i = 0
 
         # skip through early non-overlapping transactions
@@ -48,7 +48,7 @@ class Account:
             logger.debug(f"Skipped over {old_i} earlier old transactions")
         elif new_transactions_start < old_transactions_start:
             while new_transactions[new_i].date < old_transactions_start:
-                unique_transaction_indexes.insert(0, (new_i, 0))
+                unique_transaction_indexes.insert(0, (0, new_i))
                 new_i += 1
             logger.debug(f"Marked {new_i} earlier new transactions for insertion")
 
@@ -63,7 +63,7 @@ class Account:
                 continue
             elif new_transactions[new_i].date < self.transactions[old_i].date:
                 # this new transaction fills in a gap
-                unique_transaction_indexes.insert(0, (new_i, old_i))
+                unique_transaction_indexes.insert(0, (old_i, new_i))
                 new_i += 1
                 logger.debug("Marked an overlapping new transaction for insertion")
             else:
@@ -72,7 +72,7 @@ class Account:
 
         # if there are any leftover new transactions, they come after any existing ones
         for x in range(new_i, new_transactions_length):
-            unique_transaction_indexes.insert(0, (x, old_transactions_length))
+            unique_transaction_indexes.insert(0, (old_transactions_length, x))
             logger.debug("Marked a later new transaction for insertion")
 
         # append new transactions and exit

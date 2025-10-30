@@ -2,7 +2,7 @@ from datetime import date
 import unittest
 
 from nationwide_parser.transaction import Transaction
-from nationwide_parser.account import Account
+from nationwide_parser.account import Account, InconsistentTransactionsError
 
 
 class TestTransactionMerging(unittest.TestCase):
@@ -134,7 +134,7 @@ class TestTransactionMerging(unittest.TestCase):
                 Transaction(date(2025, 2, 2), 99, "abc", "xyz", 1100),
                 ]
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(InconsistentTransactionsError):
             self.test_account.add_unique_transactions(new_transactions)
 
     def test_invalid_second_merge(self):
@@ -145,5 +145,5 @@ class TestTransactionMerging(unittest.TestCase):
                 Transaction(date(2025, 2, 4), -100, "abc", "xyz", 400),
                 ]
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(InconsistentTransactionsError):
             self.test_account.add_unique_transactions(new_transactions)

@@ -3,6 +3,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+class InconsistentTransactionsError(Exception):
+    """Raised when two transactions cannot be reconciled"""
+
+    pass
+
 class Account:
     """An account consisting of a name and a chronological list of
     Transactions"""
@@ -68,7 +73,7 @@ class Account:
                 logger.debug("Marked an overlapping new transaction for insertion")
             else:
                 # transactions on the same date should agree
-                raise ValueError(f"Inconsistent transaction data! New transaction {new_transactions[new_i]} conflicts with {self.transactions[old_i]}")
+                raise InconsistentTransactionsError(f"Inconsistent transaction data! New transaction {new_transactions[new_i]} conflicts with {self.transactions[old_i]}")
 
         # if there are any leftover new transactions, they come after any existing ones
         for x in range(new_i, new_transactions_length):

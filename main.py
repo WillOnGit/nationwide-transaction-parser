@@ -51,7 +51,7 @@ def main():
 
     logger.info("Parsed all files successfully, with the following results:")
     for x in accounts:
-        logger.info(f"Account {x}: {len(accounts[x].transactions)} transactions from {accounts[x].transactions[0].date} to {accounts[x].transactions[-1].date}")
+        logger.info(f"Account {x}: {len(accounts[x].transactions)} {'complete' if accounts[x].all_transactions_are_continuous() else 'incomplete'} transactions from {accounts[x].transactions[0].date} to {accounts[x].transactions[-1].date}")
     logger.info("Done")
 
 if __name__ == "__main__":

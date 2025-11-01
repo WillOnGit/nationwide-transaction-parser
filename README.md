@@ -20,6 +20,8 @@ python main.py dir1 dir2 ...
     - date
     - amount
     - balance
+- Accounts can't be mathematically guaranteed to have all transactions - there could always be extra transactions missing, even in a day, which sum to no difference.
+    - therefore, we assume that if an account is consistent throughout a time period, it's probably complete.
 
 ## Tests
 Run `make test` from the root directory to discover and run unit tests.

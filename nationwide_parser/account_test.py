@@ -159,3 +159,46 @@ class TestTransactionMerging(unittest.TestCase):
                 Transaction(date(2025, 2, 4), -600, "abc", "xyz", 500),
                 Transaction(date(2025, 2, 4), -100, "abc", "xyz", 400),
             ])
+
+class TestAccountConsistency(unittest.TestCase):
+    def test_consistent_account(self):
+        account = Account("aaa", [
+                Transaction(date(2025, 2, 1), 1, "abc", "xyz", 1001),
+                Transaction(date(2025, 2, 2), 99, "abc", "xyz", 1100),
+                Transaction(date(2025, 2, 4), -600, "abc", "xyz", 500),
+                Transaction(date(2025, 2, 4), -100, "abc", "xyz", 400),
+            ])
+
+        self.assertTrue(account.all_transactions_are_continuous())
+
+    def test_incomplete_account(self):
+        account = Account("aaa", [
+                Transaction(date(2025, 2, 1), 1, "abc", "xyz", 1001),
+                Transaction(date(2025, 2, 2), 99, "abc", "xyz", 1100),
+                Transaction(date(2025, 2, 4), -600, "abc", "xyz", 10000),
+                Transaction(date(2025, 2, 4), -100, "abc", "xyz", 9900),
+            ])
+
+        self.assertFalse(account.all_transactions_are_continuous())
+
+    def test_inconsistent_order_account(self):
+        account = Account("aaa", [
+                Transaction(date(2025, 2, 1), 1, "abc", "xyz", 1001),
+                Transaction(date(2025, 1, 2), 99, "abc", "xyz", 1100), # out of order
+                Transaction(date(2025, 2, 4), -600, "abc", "xyz", 500),
+                Transaction(date(2025, 2, 4), -100, "abc", "xyz", 400),
+            ])
+
+        with self.assertRaises(InconsistentTransactionsError):
+            self.assertTrue(account.all_transactions_are_continuous())
+
+    def test_inconsistent_values_account(self):
+        account = Account("aaa", [
+                Transaction(date(2025, 2, 1), 1, "abc", "xyz", 1001),
+                Transaction(date(2025, 2, 2), 99, "abc", "xyz", 1100),
+                Transaction(date(2025, 2, 4), -600, "abc", "xyz", 500),
+                Transaction(date(2025, 2, 4), -100, "abc", "xyz", 0), # does not add up on same day
+            ])
+
+        with self.assertRaises(InconsistentTransactionsError):
+            self.assertTrue(account.all_transactions_are_continuous())

@@ -19,6 +19,18 @@ class Account:
     def __str__(self):
         return self.name
 
+    def all_transactions_are_continuous(self):
+        for i in range(1, len(self.transactions)):
+            if self.transactions[i].succeeds(self.transactions[i - 1]):
+                continue
+            elif self.transactions[i].date > self.transactions[i - 1].date:
+                # some transactions may just be missing
+                return False
+            else:
+                # transactions should agree, therefore something is wrong
+                raise InconsistentTransactionsError(f"{self.transactions[i]} cannot follow {self.transactions[i - 1]}")
+        return True
+
     """Add only new transactions to account, returning how many were
     added"""
     def add_unique_transactions(self, new_transactions):

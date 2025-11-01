@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from nationwide_parser.account import Account
 from nationwide_parser.statement import read_nationwide_file
 
 
@@ -49,31 +50,17 @@ class TestFileParsing(unittest.TestCase):
                 result = read_nationwide_file(os.path.join(TEST_DATA_DIR, file))
                 self.assertIsNone(result)
 
-class TestFileTransactions(unittest.TestCase):
+class TestFileConsistency(unittest.TestCase):
     def test_statement_consistency(self):
         infile = os.path.join(TEST_DATA_DIR, "test-statement.csv")
-        result = read_nationwide_file(infile)[1]
+        result = read_nationwide_file(infile)
+        account = Account(result[0], result[1])
 
-        last_transaction = None
-        for transaction in result:
-            if last_transaction is None:
-                last_transaction = transaction
-                continue
-
-            self.assertEqual(last_transaction.closing_balance + transaction.amount, transaction.closing_balance)
-            self.assertGreaterEqual(transaction.date, last_transaction.date)
-            last_transaction = transaction
+        self.assertTrue(account.all_transactions_are_continuous())
 
     def test_midata_consistency(self):
         infile = os.path.join(TEST_DATA_DIR, "test-midata.csv")
-        result = read_nationwide_file(infile)[1]
+        result = read_nationwide_file(infile)
+        account = Account(result[0], result[1])
 
-        last_transaction = None
-        for transaction in result:
-            if last_transaction is None:
-                last_transaction = transaction
-                continue
-
-            self.assertEqual(last_transaction.closing_balance + transaction.amount, transaction.closing_balance)
-            self.assertGreaterEqual(transaction.date, last_transaction.date)
-            last_transaction = transaction
+        self.assertTrue(account.all_transactions_are_continuous())

@@ -3,7 +3,7 @@ import logging
 import os
 import sys
 
-from nationwide_parser.statement import read_nationwide_file
+from nationwide_parser.statement import StatementParseError, read_nationwide_file
 from nationwide_parser.account import Account
 
 
@@ -42,12 +42,15 @@ def main():
     for statement_dir in statement_dirs:
         statements = os.listdir(statement_dir)
         for statement in statements:
-            account_name, transactions = read_nationwide_file(os.path.join(statement_dir, statement))
-            logger.info(f"Read {len(transactions)} transactions for account {account_name}")
-            if account_name in accounts:
-                accounts[account_name].add_unique_transactions(transactions)
-            else:
-                accounts[account_name] = Account(account_name, transactions)
+            try:
+                account_name, transactions = read_nationwide_file(os.path.join(statement_dir, statement))
+                logger.info(f"Read {len(transactions)} transactions for account {account_name}")
+                if account_name in accounts:
+                    accounts[account_name].add_unique_transactions(transactions)
+                else:
+                    accounts[account_name] = Account(account_name, transactions)
+            except StatementParseError as e:
+                logger.warning(e)
 
     logger.info("Parsed all files successfully, with the following results:")
     for x in accounts:

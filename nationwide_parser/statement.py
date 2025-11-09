@@ -131,6 +131,12 @@ def _nationwide_parse_transaction(row):
 
 Nationwide = StatementReader("Nationwide statement", _NATIONWIDE_HEADER, r'"Account Name:","[^"*]*(\*+\d+)"', _nationwide_parse_transaction, lambda x : x)
 
+class StatementParseError(Exception):
+    """Raised when a file can't be parsed into a name and list of
+    transactions"""
+
+    pass
+
 def read_nationwide_file(file):
     file_basename = os.path.basename(file)
     logger.debug(f'Reading file "{file_basename}"')
@@ -141,9 +147,8 @@ def read_nationwide_file(file):
     # check file not empty
     line = f.readline()
     if line == '': # EOF
-        logger.warning(f'"{file_basename}" is empty')
         f.close()
-        return None
+        raise StatementParseError(f'"{file_basename}" is empty')
 
     # try getting account name from first line only
     statement_formats = [ Midata, Nationwide ]
@@ -157,17 +162,15 @@ def read_nationwide_file(file):
             break
 
     if statement_format is None:
-        logger.warning(f'Could not detect a statement format for "{file_basename}"')
         f.close()
-        return None
+        raise StatementParseError(f'Could not detect a statement format for "{file_basename}"')
 
     # skip through lines until we hit the CSV header
     while (True):
         line = f.readline()
         if line == '': # EOF
-            logger.warning(f'Could not detect start of transaction data for "{file_basename}"')
             f.close()
-            return None
+            raise StatementParseError(f'Could not detect start of transaction data for "{file_basename}"')
         elif line.strip() == statement_format.header:
             logger.debug(f'Detected start of transaction data for "{file_basename}"')
             break
@@ -184,13 +187,9 @@ def read_nationwide_file(file):
             transaction = statement_format.parse_transaction(row)
             logger.debug(f"Parsed transaction: {transaction}")
             transactions.append(transaction)
-        except ValueError:
+        except Exception as e:
             f.close()
-            raise
-        except:
-            f.close()
-            logger.warning("An unexpected error occurred!")
-            raise
+            raise StatementParseError(e)
 
     logger.debug(f'Reached end of file "{file_basename}"')
     f.close()

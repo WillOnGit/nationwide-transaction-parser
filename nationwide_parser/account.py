@@ -85,7 +85,7 @@ class Account:
                 logger.debug("Marked an overlapping new transaction for insertion")
             else:
                 # transactions on the same date should agree
-                raise InconsistentTransactionsError(f"Inconsistent transaction data! New transaction {new_transactions[new_i]} conflicts with {self.transactions[old_i]}")
+                raise InconsistentTransactionsError(f"New transaction {new_transactions[new_i]} conflicts with {self.transactions[old_i]}")
 
         # if there are any leftover new transactions, they come after any existing ones
         for x in range(new_i, new_transactions_length):

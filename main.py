@@ -12,7 +12,7 @@ arg_parser = argparse.ArgumentParser(
         description="Extract transactions from exported Nationwide statements.",
         )
 arg_parser.add_argument("-v", "--verbose", action="store_true")
-arg_parser.add_argument("directories", nargs="*")
+arg_parser.add_argument("infiles", nargs="*")
 
 argv = arg_parser.parse_args()
 
@@ -26,31 +26,32 @@ else:
 def main():
     logger.info("Starting...")
 
-    statement_dirs = []
-    for arg in argv.directories:
+    statements = []
+    for arg in argv.infiles:
         if os.path.isdir(arg):
-            statement_dirs.append(arg)
+            new_filenames = [os.path.join(arg, f) for f in os.listdir(arg)]
+            new_filepaths = [f for f in new_filenames if not os.path.isdir(f)]
+            statements.extend(new_filepaths)
         else:
-            logger.warning(f"Skipping {arg} as it is not a directory")
-    if statement_dirs == []:
+            statements.append(arg)
+    if statements == []:
         logger.info("Nothing to do")
         sys.exit(0)
 
+    logger.debug(f"Found statements {statements}")
+
     # collect observed accounts
     accounts = {}
-
-    for statement_dir in statement_dirs:
-        statements = os.listdir(statement_dir)
-        for statement in statements:
-            try:
-                account_name, transactions = read_nationwide_file(os.path.join(statement_dir, statement))
-                logger.info(f"Read {len(transactions)} transactions for account {account_name}")
-                if account_name in accounts:
-                    accounts[account_name].add_unique_transactions(transactions)
-                else:
-                    accounts[account_name] = Account(account_name, transactions)
-            except StatementParseError as e:
-                logger.warning(e)
+    for statement in statements:
+        try:
+            account_name, transactions = read_nationwide_file(statement)
+            logger.info(f"Read {len(transactions)} transactions for account {account_name}")
+            if account_name in accounts:
+                accounts[account_name].add_unique_transactions(transactions)
+            else:
+                accounts[account_name] = Account(account_name, transactions)
+        except StatementParseError as e:
+            logger.warning(e)
 
     logger.info("Parsed all files successfully, with the following results:")
     for x in accounts:

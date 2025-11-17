@@ -184,9 +184,14 @@ def read_nationwide_file(file):
         if len(row) == 0:
             break
         try:
-            transaction = statement_format.parse_transaction(row)
-            logger.debug(f"Parsed transaction: {transaction}")
-            transactions.append(transaction)
+            new_transaction = statement_format.parse_transaction(row)
+            logger.debug(f"Parsed transaction: {new_transaction}")
+
+            if len(transactions) > 0 and not new_transaction.succeeds(transactions[-1]):
+                raise StatementParseError(f"Statement contains inconsistent transaction order: {transactions[-1]} -> {new_transaction}")
+
+            transactions.append(new_transaction)
+
         except Exception as e:
             f.close()
             raise StatementParseError(e)

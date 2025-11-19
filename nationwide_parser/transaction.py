@@ -28,5 +28,8 @@ class Transaction:
     def is_equivalent(self, other):
         return self.date == other.date and self.amount == other.amount and self.closing_balance == other.closing_balance
 
+    def precedes(self, other):
+        return self.date <= other.date and self.closing_balance == other.closing_balance - other.amount
+
     def succeeds(self, other):
         return self.date >= other.date and self.closing_balance == other.closing_balance + self.amount

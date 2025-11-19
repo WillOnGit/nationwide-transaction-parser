@@ -10,13 +10,14 @@ from nationwide_parser.transaction import Transaction
 logger = logging.getLogger(__name__)
 
 class StatementReader():
-    def __init__(self, name, header, account_regex, parse_raw_transaction, order_raw_transactions):
+    def __init__(self, name, header, account_regex, parse_raw_transaction, order_raw_transactions, validate_running_transactions):
         self.name = name
         self.header = header
         self._transaction_fields = header.count(",") + 1
         self._account_regex = re.compile(account_regex)
         self._parse_raw_transaction = parse_raw_transaction
         self._order_transactions = order_raw_transactions
+        self._validate_running_transactions = validate_running_transactions
 
     def __str__(self):
         return self.name
@@ -36,6 +37,9 @@ class StatementReader():
 
     def order(self, results):
         return self._order_transactions(results)
+
+    def validate(self, previous_transaction, new_transaction):
+        return self._validate_running_transactions(previous_transaction, new_transaction)
 
 # field parsers
 def _parse_monetary_amount(money_string):
@@ -79,7 +83,7 @@ def _midata_parse_transaction(row):
     closing_balance = _parse_monetary_amount(row[4])
     return Transaction(date, amount, kind, description, closing_balance)
 
-Midata = StatementReader("Midata", _MIDATA_HEADER, r'"Account Number:","([^"]+)"', _midata_parse_transaction, lambda x : x[::-1])
+Midata = StatementReader("Midata", _MIDATA_HEADER, r'"Account Number:","([^"]+)"', _midata_parse_transaction, lambda x : x[::-1], lambda x, y: x.succeeds(y))
 
 
 # Nationwide
@@ -129,7 +133,7 @@ def _nationwide_parse_transaction(row):
 
     return Transaction()
 
-Nationwide = StatementReader("Nationwide statement", _NATIONWIDE_HEADER, r'"Account Name:","[^"*]*(\*+\d+)"', _nationwide_parse_transaction, lambda x : x)
+Nationwide = StatementReader("Nationwide statement", _NATIONWIDE_HEADER, r'"Account Name:","[^"*]*(\*+\d+)"', _nationwide_parse_transaction, lambda x : x, lambda x, y: x.precedes(y))
 
 class StatementParseError(Exception):
     """Raised when a file can't be parsed into a name and list of
@@ -184,11 +188,12 @@ def read_nationwide_file(file):
         if len(row) == 0:
             break
         try:
+            old_transaction = transactions[-1] if len(transactions) > 0 else None
             new_transaction = statement_format.parse_transaction(row)
             logger.debug(f"Parsed transaction: {new_transaction}")
 
-            if len(transactions) > 0 and not new_transaction.succeeds(transactions[-1]):
-                raise StatementParseError(f"Statement contains inconsistent transaction order: {transactions[-1]} -> {new_transaction}")
+            if old_transaction is not None and not statement_format.validate(old_transaction, new_transaction):
+                raise StatementParseError(f"Statement contains inconsistent transaction order: {old_transaction} -> {new_transaction}")
 
             transactions.append(new_transaction)
 

@@ -52,13 +52,27 @@ class Account:
         # prep
         old_transactions_length = len(self.transactions)
         old_transactions_start = self.transactions[0].date
+        old_transactions_end = self.transactions[-1].date
         new_transactions_length = len(new_transactions)
         new_transactions_start = new_transactions[0].date
+        new_transactions_end = new_transactions[-1].date
 
         unique_transaction_indexes = [] # list of tuples (index of self.transactions where to insert, index of transaction in new_transactions)
         old_i = new_i = 0
 
-        # skip through early non-overlapping transactions
+        # easy cases where transactions do not overlap
+        if new_transactions_end < old_transactions_start:
+            logger.debug(f"All {len(new_transactions)} predate the existing transactions; prepending them all")
+            new_transactions.extend(self.transactions)
+            self.transactions = new_transactions
+            return len(new_transactions)
+
+        if new_transactions_start > old_transactions_end:
+            logger.debug(f"All {len(new_transactions)} postdate the existing transactions; appending them all")
+            self.transactions.extend(new_transactions)
+            return len(new_transactions)
+
+        # transactions DO overlap - skip through early non-overlapping transactions
         if old_transactions_start < new_transactions_start:
             while self.transactions[old_i].date < new_transactions_start:
                 old_i += 1

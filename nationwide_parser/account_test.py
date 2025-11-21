@@ -160,6 +160,34 @@ class TestTransactionMerging(unittest.TestCase):
                 Transaction(date(2025, 2, 4), -100, "abc", "xyz", 400),
             ])
 
+    def test_non_overlapping_earlier_into_later(self):
+        new_transactions = [
+                Transaction(date(2025, 1, 1), 100, "abc", "xyz", 100),
+                ]
+
+        self.test_account.add_unique_transactions(new_transactions)
+        self.assertEqual(self.test_account.transactions, [
+                Transaction(date(2025, 1, 1), 100, "abc", "xyz", 100),
+                Transaction(date(2025, 2, 1), 1, "abc", "xyz", 1001),
+                Transaction(date(2025, 2, 2), 99, "abc", "xyz", 1100),
+                Transaction(date(2025, 2, 4), -600, "abc", "xyz", 500),
+                Transaction(date(2025, 2, 4), -100, "abc", "xyz", 400),
+            ])
+
+    def test_non_overlapping_later_into_earlier(self):
+        new_transactions = [
+                Transaction(date(2025, 3, 1), 100, "abc", "xyz", 500),
+                ]
+
+        self.test_account.add_unique_transactions(new_transactions)
+        self.assertEqual(self.test_account.transactions, [
+                Transaction(date(2025, 2, 1), 1, "abc", "xyz", 1001),
+                Transaction(date(2025, 2, 2), 99, "abc", "xyz", 1100),
+                Transaction(date(2025, 2, 4), -600, "abc", "xyz", 500),
+                Transaction(date(2025, 2, 4), -100, "abc", "xyz", 400),
+                Transaction(date(2025, 3, 1), 100, "abc", "xyz", 500),
+            ])
+
 class TestAccountConsistency(unittest.TestCase):
     def test_consistent_account(self):
         account = Account("aaa", [

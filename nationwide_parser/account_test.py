@@ -190,7 +190,7 @@ class TestAccountConsistency(unittest.TestCase):
             ])
 
         with self.assertRaises(InconsistentTransactionsError):
-            self.assertTrue(account.all_transactions_are_continuous())
+            account.all_transactions_are_continuous()
 
     def test_inconsistent_values_account(self):
         account = Account("aaa", [
@@ -201,4 +201,4 @@ class TestAccountConsistency(unittest.TestCase):
             ])
 
         with self.assertRaises(InconsistentTransactionsError):
-            self.assertTrue(account.all_transactions_are_continuous())
+            account.all_transactions_are_continuous()

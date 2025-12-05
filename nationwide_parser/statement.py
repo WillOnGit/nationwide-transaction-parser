@@ -1,5 +1,6 @@
 import csv
 import datetime
+import enum
 import logging
 import os
 import re
@@ -10,14 +11,20 @@ from nationwide_parser.transaction import Transaction
 logger = logging.getLogger(__name__)
 
 class StatementReader():
-    def __init__(self, name, header, account_regex, parse_raw_transaction, order_raw_transactions, validate_running_transactions):
+    class TransactionOrder(enum.Enum):
+        CHRONOLOGICAL = 1
+        REVERSE_CHRONOLOGICAL = -1
+
+    def __init__(self, name, header, account_regex, parse_raw_transaction, transaction_ordering):
         self.name = name
         self.header = header
         self._transaction_fields = header.count(",") + 1
         self._account_regex = re.compile(account_regex)
         self._parse_raw_transaction = parse_raw_transaction
-        self._order_transactions = order_raw_transactions
-        self._validate_running_transactions = validate_running_transactions
+
+        if not isinstance(transaction_ordering, self.TransactionOrder):
+            raise ValueError("transaction_ordering must be a member of StatementReader.TransactionOrder")
+        self._transaction_ordering = transaction_ordering
 
     def __str__(self):
         return self.name
@@ -36,10 +43,16 @@ class StatementReader():
         return self._parse_raw_transaction(row)
 
     def order(self, results):
-        return self._order_transactions(results)
+        if self._transaction_ordering == self.TransactionOrder.CHRONOLOGICAL:
+            return results
+        else:
+            return results[::-1]
 
     def validate(self, previous_transaction, new_transaction):
-        return self._validate_running_transactions(previous_transaction, new_transaction)
+        if self._transaction_ordering == self.TransactionOrder.CHRONOLOGICAL:
+            return new_transaction.succeeds(previous_transaction)
+        else:
+            return previous_transaction.succeeds(new_transaction)
 
 # field parsers
 def _parse_monetary_amount(money_string):
@@ -83,7 +96,7 @@ def _midata_parse_transaction(row):
     closing_balance = _parse_monetary_amount(row[4])
     return Transaction(date, amount, kind, description, closing_balance)
 
-Midata = StatementReader("Midata", _MIDATA_HEADER, r'"Account Number:","([^"]+)"', _midata_parse_transaction, lambda x : x[::-1], lambda x, y: x.succeeds(y))
+Midata = StatementReader("Midata", _MIDATA_HEADER, r'"Account Number:","([^"]+)"', _midata_parse_transaction, StatementReader.TransactionOrder.REVERSE_CHRONOLOGICAL)
 
 
 # Nationwide
@@ -133,7 +146,7 @@ def _nationwide_parse_transaction(row):
 
     return Transaction()
 
-Nationwide = StatementReader("Nationwide statement", _NATIONWIDE_HEADER, r'"Account Name:","[^"*]*(\*+\d+)"', _nationwide_parse_transaction, lambda x : x, lambda x, y: x.precedes(y))
+Nationwide = StatementReader("Nationwide statement", _NATIONWIDE_HEADER, r'"Account Name:","[^"*]*(\*+\d+)"', _nationwide_parse_transaction, StatementReader.TransactionOrder.CHRONOLOGICAL)
 
 class StatementParseError(Exception):
     """Raised when a file can't be parsed into a name and list of

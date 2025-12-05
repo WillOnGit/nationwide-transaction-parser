@@ -1,0 +1,13 @@
+"Account Name:","Foo current ****12345"
+"Account Balance:","£100.00"
+"Available Balance: ","£100.00"
+
+"Date","Transaction type","Description","Paid out","Paid in","Balance"
+"13 May 2025","Direct debit ABC WATER BILL","ABC WATER BILL","£30.00","","£200.00"
+"13 May 2025","Visa purchase","ABC RESTAURANT","£50.00","","£150.00"
+"01 Jun 2025","Payment to","ABC GARAGE","£31.00","","£119.00"
+"30 May 2025","Interest added","Credit ** May ****","","£1.00","£120.00"
+"25 Jun 2025","Visa Credit","ABC SUPERMARKET","","£10.00","£130.00"
+"28 Jun 2025","Transfer from JOHN SMITH","012345 12345678","","£100.00","£230.00"
+"30 Jun 2025","Interest added","Credit ** June ****","","£1.00","£101.00"
+"01 Aug 2025","Transfer to","012345 09876543","£130.00","","£100.00"

@@ -26,6 +26,18 @@ class TestFileParsing(unittest.TestCase):
 
         self.assertEqual(len(result[1]), 8)
 
+    @unittest.expectedFailure
+    def test_parse_midata_with_interest(self):
+        infile = os.path.join(TEST_DATA_DIR, "midata-with-interest.csv")
+        result = read_nationwide_file(infile)
+
+        self.assertIsInstance(result, tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], "****12345")
+        self.assertIsInstance(result[1], list)
+
+        self.assertEqual(len(result[1]), 10)
+
     def test_parse_bad_midatas(self):
         infiles = [f for f in os.listdir(TEST_DATA_DIR) if f.startswith('bad-midata') and f.endswith('.csv')]
         for file in infiles:
@@ -43,6 +55,18 @@ class TestFileParsing(unittest.TestCase):
         self.assertIsInstance(result[1], list)
 
         self.assertEqual(len(result[1]), 6)
+
+    @unittest.expectedFailure
+    def test_parse_statement_with_interest(self):
+        infile = os.path.join(TEST_DATA_DIR, "statement-with-interest.csv")
+        result = read_nationwide_file(infile)
+
+        self.assertIsInstance(result, tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], "****12345")
+        self.assertIsInstance(result[1], list)
+
+        self.assertEqual(len(result[1]), 8)
 
     def test_parse_bad_statements(self):
         infiles = [f for f in os.listdir(TEST_DATA_DIR) if f.startswith('bad-statement') and f.endswith('.csv')]

@@ -26,7 +26,6 @@ class TestFileParsing(unittest.TestCase):
 
         self.assertEqual(len(result[1]), 8)
 
-    @unittest.expectedFailure
     def test_parse_midata_with_interest(self):
         infile = os.path.join(TEST_DATA_DIR, "midata-with-interest.csv")
         result = read_nationwide_file(infile)
@@ -56,7 +55,6 @@ class TestFileParsing(unittest.TestCase):
 
         self.assertEqual(len(result[1]), 6)
 
-    @unittest.expectedFailure
     def test_parse_statement_with_interest(self):
         infile = os.path.join(TEST_DATA_DIR, "statement-with-interest.csv")
         result = read_nationwide_file(infile)

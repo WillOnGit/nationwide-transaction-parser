@@ -33,9 +33,6 @@ class Transaction:
         # seems to be this
         return self.amount > 0 and self.kind == "Interest added"
 
-    def precedes(self, other):
-        return self.date <= other.date and self.closing_balance == other.closing_balance - other.amount
-
     def succeeds(self, other):
         return self.date >= other.date and self.closing_balance == other.closing_balance + self.amount
 

@@ -231,7 +231,7 @@ def read_nationwide_file(file):
 
     # check file not empty
     line = f.readline()
-    if line == '': # EOF
+    if line == "": # EOF
         f.close()
         raise StatementParseError(f'"{file_basename}" is empty')
 
@@ -253,7 +253,7 @@ def read_nationwide_file(file):
     # skip through lines until we hit the CSV header
     while (True):
         line = f.readline()
-        if line == '': # EOF
+        if line == "": # EOF
             f.close()
             raise StatementParseError(f'Could not detect start of transaction data for "{file_basename}"')
         elif line.strip() == statement_format.header:

@@ -15,6 +15,7 @@ python main.py dir1 dir2 ...
 - Each file starts with a complete day of data and ends with a potentially incomplete one.
 - Transactions have no unique id but the running balance can be used to (mostly) identify them.
 - All transactions are in GBP.
+- All transactions are for nonzero, whole quantities of pennies
 - Each file is for one account, named in a header at the top.
 - Statements are generally consistent, i.e. transaction dates increase monotonically and running balances are consistent with transaction amounts.
 The exception is interest payments which are sometimes listed out of order and/or labelled with an "incorrect"/nominal date.

@@ -26,7 +26,7 @@ class Transaction:
 
         return f"{display_amount} {str_preposition} {self.description} on {self.date}"
 
-    def is_equivalent(self, other):
+    def is_equivalent_to(self, other):
         return self.date == other.date and self.amount == other.amount and self.closing_balance == other.closing_balance
 
     def is_interest(self):

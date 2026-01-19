@@ -86,7 +86,7 @@ class Account:
         # compare overlapping transactions
         # loop ends when we run out of old or new transactions to compare
         while new_i < new_transactions_length and old_i < old_transactions_length:
-            if new_transactions[new_i].is_equivalent(self.transactions[old_i]):
+            if new_transactions[new_i].is_equivalent_to(self.transactions[old_i]):
                 # transactions match, nothing to do
                 old_i += 1
                 new_i += 1

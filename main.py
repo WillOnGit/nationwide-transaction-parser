@@ -32,8 +32,10 @@ def main():
             new_filenames = [os.path.join(arg, f) for f in os.listdir(arg)]
             new_filepaths = [f for f in new_filenames if not os.path.isdir(f)]
             statements.extend(new_filepaths)
-        else:
+        elif os.path.isfile(arg):
             statements.append(arg)
+        else:
+            logger.warning(f"{arg} is not a file")
     if statements == []:
         logger.info("Nothing to do")
         sys.exit(0)

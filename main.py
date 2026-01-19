@@ -43,10 +43,14 @@ def main():
     logger.debug(f"Found statements {statements}")
 
     # collect observed accounts
+    num_statements = len(statements)
+    successful_reads = 0
     accounts = {}
+
     for statement in statements:
         try:
             account_name, transactions = read_nationwide_file(statement)
+            successful_reads += 1
             logger.info(f"Read {len(transactions)} transactions for account {account_name}")
             if account_name in accounts:
                 accounts[account_name].add_unique_transactions(transactions)
@@ -55,10 +59,18 @@ def main():
         except StatementParseError as e:
             logger.warning(e)
 
-    logger.info("Parsed all files successfully, with the following results:")
+    if successful_reads == 0:
+        logger.info(f"Could not parse any input files.")
+        return
+
+    if successful_reads == num_statements:
+        msg = f"Parsed all {num_statements} files successfully, with the following results:"
+    else:
+        msg = f"Parsed {successful_reads}/{num_statements} files successfully, with the following results:"
+    logger.info(msg)
+
     for x in accounts:
         logger.info(f"Account {x}: {len(accounts[x].transactions)} {'complete' if accounts[x].all_transactions_are_continuous() else 'incomplete'} transactions from {accounts[x].transactions[0].date} to {accounts[x].transactions[-1].date}")
-    logger.info("Done")
 
 if __name__ == "__main__":
     main()

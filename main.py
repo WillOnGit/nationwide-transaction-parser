@@ -69,8 +69,24 @@ def main():
         msg = f"Parsed {successful_reads}/{num_statements} files successfully, with the following results:"
     logger.info(msg)
 
+    # beancount
+    f = open("test-out.beancount", "w")
+    f.write("""option "operating_currency" "GBP"
+
+2000-01-01 open Income:Unknown
+2000-01-01 open Expenses:Unknown
+
+""")
+
     for x in accounts:
         logger.info(f"Account {x}: {len(accounts[x].transactions)} {'complete' if accounts[x].all_transactions_are_continuous() else 'incomplete'} transactions from {accounts[x].transactions[0].date} to {accounts[x].transactions[-1].date}")
+        bc_name = f"Assets:{x.removeprefix('****')}"
+        f.write(f"2000-01-01 open {bc_name}\n")
+        for t in accounts[x].transactions:
+            f.write("\n")
+            f.write(t.to_beancount(bc_name))
+
+    f.close()
 
 if __name__ == "__main__":
     main()

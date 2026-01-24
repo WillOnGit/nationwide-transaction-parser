@@ -12,8 +12,10 @@ from nationwide_parser.utils import decimalise
 # parse args
 arg_parser = argparse.ArgumentParser(
         description="Generate a Beancount ledger from Nationwide statements.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
         )
 arg_parser.add_argument("-v", "--verbose", action="store_true")
+arg_parser.add_argument("-o", "--output", default="generated.beancount", help="Output ledger file name")
 arg_parser.add_argument("infiles", nargs="*")
 
 argv = arg_parser.parse_args()
@@ -72,7 +74,7 @@ def main():
     logger.info(msg)
 
     # beancount
-    f = open("test-out.beancount", "w")
+    f = open(argv.output, "w")
     f.write("""option "operating_currency" "GBP"
 
 2000-01-01 open Income:Unknown

@@ -11,7 +11,7 @@ from nationwide_parser.utils import decimalise
 
 # parse args
 arg_parser = argparse.ArgumentParser(
-        description="Extract transactions from exported Nationwide statements.",
+        description="Generate a Beancount ledger from Nationwide statements.",
         )
 arg_parser.add_argument("-v", "--verbose", action="store_true")
 arg_parser.add_argument("infiles", nargs="*")

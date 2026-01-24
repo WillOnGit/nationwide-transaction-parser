@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import datetime
 import copy
 
+from nationwide_parser.utils import decimalise
+
 
 @dataclass
 class Transaction:
@@ -22,7 +24,7 @@ class Transaction:
         if absolute_amount < 100:
             display_amount = f"{absolute_amount}p"
         else:
-            display_amount = f"£{absolute_amount//100}.{absolute_amount % 100:02}"
+            display_amount = f"£{decimalise(absolute_amount)}"
 
         return f"{display_amount} {str_preposition} {self.description} on {self.date}"
 
@@ -46,16 +48,13 @@ class Transaction:
         redated.date = new_date
         return redated
 
-    def decimalise_absolute_amount(self):
-        return f"{abs(self.amount) // 100}.{abs(self.amount) % 100:02}"
-
     def to_beancount(self, acct_name):
         EXPENSES    = "Expenses:Unknown"
         INCOME      = "Income:Unknown"
 
         income = INCOME if self.amount > 0 else EXPENSES
         beancount_str = f"""{self.date.isoformat()} * "{self.description}" ""
-  {acct_name} {"-" if self.amount < 0 else " "}{self.decimalise_absolute_amount()} GBP
-  {income} {"-" if self.amount > 0 else " "}{self.decimalise_absolute_amount()} GBP
+  {acct_name} {decimalise(self.amount)} GBP
+  {income} {decimalise(-self.amount)} GBP
 """
         return beancount_str

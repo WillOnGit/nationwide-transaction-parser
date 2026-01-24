@@ -1,10 +1,12 @@
 import argparse
+import datetime
 import logging
 import os
 import sys
 
 from nationwide_parser.statement import StatementParseError, read_nationwide_file
 from nationwide_parser.account import Account
+from nationwide_parser.utils import decimalise
 
 
 # parse args
@@ -75,6 +77,7 @@ def main():
 
 2000-01-01 open Income:Unknown
 2000-01-01 open Expenses:Unknown
+2000-01-01 open Equity:Opening-Balances
 
 """)
 
@@ -82,9 +85,22 @@ def main():
         logger.info(f"Account {x}: {len(accounts[x].transactions)} {'complete' if accounts[x].all_transactions_are_continuous() else 'incomplete'} transactions from {accounts[x].transactions[0].date} to {accounts[x].transactions[-1].date}")
         bc_name = f"Assets:{x.removeprefix('****')}"
         f.write(f"2000-01-01 open {bc_name}\n")
+
+        # TODO: are accounts with no transactions possible?
+        first_txn = accounts[x].transactions[0]
+        opening_balance = first_txn.closing_balance - first_txn.amount
+        if opening_balance != 0:
+            f.write(f"""2000-01-01 pad {bc_name} Equity:Opening-Balances
+{first_txn.date.isoformat()} balance {bc_name} {decimalise(opening_balance)} GBP
+""")
+
         for t in accounts[x].transactions:
             f.write("\n")
             f.write(t.to_beancount(bc_name))
+        f.write(f"""
+{(t.date + datetime.timedelta(days=1)).isoformat()} balance {bc_name} {decimalise(t.closing_balance)} GBP
+
+""")
 
     f.close()
 
